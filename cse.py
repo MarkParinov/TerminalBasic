@@ -74,6 +74,8 @@ def cseReadInput(inp):
         scriptlist(inp)
     elif command == '':
         return
+    elif command == 'openscript':
+        openscript(inp)
     elif command == 'moduleinfo':
         sd.moduleinfo('CSE')
     elif command == 'chmod':

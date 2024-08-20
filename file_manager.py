@@ -1,3 +1,7 @@
+# File manger (terminal module command library)
+
+# I am NOT commenting all this, mainly here are just functions for terminal module and input handler
+
 import system_design as sd
 import os
 from colorama import Fore
@@ -181,11 +185,19 @@ def readfile(inp):
         sd.err('TERMINAL','CommandStructure', 'Command takes 1 argument.')
         return
 
-    try:
-        with open(f'./{inp[0]}', 'r', encoding="UTF-8") as file:
-            sd.systemoutput(file.read())
-    except:
-        sd.err('TERMINAL','Logic', f"'{inp[0]}': unable to read or file doesn't exist. Try different file name or directory.")
+    
+    if os.path.isfile(f"./{inp[0]}") == True:
+        try:
+            with open(f'./{inp[0]}', 'r') as file:
+                sd.systemoutput(file.read())
+        except:
+            sd.err('TERMINAL','Unknown', f"'{inp[0]}': An unknown error has occured while reading the file. Check the file's content and try again.")
+    elif os.path.isdir(f"./{inp[0]}") == True:
+        sd.err('TERMINAL', 'Logic', f"'{inp[0]}': unable to read a directory.")
+
+    else:
+        sd.err('TERMINAL', 'Logic', f"'{inp[0]}': file is unreadable or doesn't exist. Check the spelling and the extension of the file.")
+
 
 def scriptlist(inp):
 
@@ -341,7 +353,7 @@ def status(inp):
         stats += [checfunc('Tables data directory', tables_folder_exists)]
         stats += [checfunc('Module state file', module_state_exists)]
         if 'missing' in stats:
-            sd.msg('TERMINAL', 'warning', "Some system files or directories are corrupted or missing. Auto fix advised.\nType 'autofix' for the software to try and fix itself.")
+            sd.msg('TERMINAL', 'warning', "Some system files or directories are corrupted or missing. Autofix advised.\nType 'autofix' for the software to try and fix itself.")
         
 
 
@@ -438,7 +450,7 @@ def menu(out):
 
 #----------Input readers for modules---------#
 
-def terminalReadInput(inp):         #Terminal (main)
+def terminalReadInput(inp, damaged):         #Terminal (main)
 
     command = ''
 
@@ -472,6 +484,7 @@ def terminalReadInput(inp):         #Terminal (main)
         if feedback == '':
             sd.msg('TERMINAL', 'success', 'No missing or corrupted files found.')
         else:
+            print(f"\n{Fore.BLUE}Autofix in progress...\n")
             print(f'{Fore.MAGENTA}=====COMMAND FEEDBACK====={Fore.WHITE}\n')
             print(feedback)
             print(f'{Fore.MAGENTA}=========================={Fore.WHITE}\n')
@@ -480,8 +493,12 @@ def terminalReadInput(inp):         #Terminal (main)
     elif command == 'moduleinfo':
         sd.moduleinfo('TERMINAL')
     elif command == 'chmod':
-        var = wrapper(menu)
-        return var
+        if damaged == True:
+            sd.err("TERMINAL", "System", "Unable to change module while in damaged state.")
+            return
+        else:
+            var = wrapper(menu)
+            return var
     elif command == '':
         return
     else:
