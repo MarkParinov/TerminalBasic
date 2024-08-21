@@ -12,7 +12,7 @@ def openscript(inp):
         return
     else:
         try:
-            if os.path.exists("C:/TerminalBasic/scripts/{inp[0]}") == True:
+            if os.path.isfile(f"C:/TerminalBasic/scripts/{inp[0]}") == True:
                 os.system(f"vim C:/TerminalBasic/scripts/{inp[0]}")
             else:
                 sd.msg("TERMINAL", "warning", "Script requested for editing does not exist. Create new empty script with entered name? [y/n]")

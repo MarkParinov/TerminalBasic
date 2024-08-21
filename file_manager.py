@@ -234,7 +234,7 @@ def scriptexecute(inp):
         for i in script.readlines():
             line = i.rstrip()
             try:
-                terminalReadInput(line)
+                terminalReadInput(line, False)
                 feedback += [line]
             except:
                 sd.err('CSE', 'CommandStructure', f"'{line}': invalid command structure.")

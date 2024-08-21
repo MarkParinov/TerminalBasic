@@ -19,6 +19,19 @@ myappid = "TerminalBasic"
 windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 folder_checker.checkfolders()
 
+def checkstatechange(state, old_state):
+    if state != old_state: # Clear the screen if the state has changed
+
+        os.system("cls")
+
+        if state == 'CORRUPTED':
+            sd.msg('TERMINAL', 'warning', "System files damaged, only able to use the terminal. Type 'status' for more information.")
+
+        else:
+            sd.msg(state, 'success', f"Terminal Basic {state} module engaged.\nType 'commandlist' inside module for module command list.")
+            old_state = state
+
+
 # Attempting to open module state file in TB root directory, if unable to - corrupted phase
 
 try:
@@ -47,14 +60,14 @@ if __name__ == "__main__":
         try:
             with open('C:/TerminalBasic/system/module_state.txt', 'r') as file:
                 state = file.readline().upper()
-                old_state = state
+                # old_state = state
         except:
             state = 'CORRUPTED'
             old_state = 'CORRUPTED'
 
         if state == 'MENU ABANDONED, NO DECISION MADE.' or state == 'EXIT': # Exits the program if the "Exit" option is chosen in the module menu
 
-            os.system('cls')
+            fm.terminalReadInput("clear", False)
 
             sd.msg("TERMINAL", 'warning', 'Exiting Terminal Basic. Have a good one!')
 
@@ -66,18 +79,9 @@ if __name__ == "__main__":
             inp = input('<damaged-state>')
             fm.terminalReadInput(inp, True)
 
-        if state != old_state: # Clear the screen if the state has changed
-
-            os.system('cls')
-
-            if state == 'CORRUPTED':
-                sd.msg('TERMINAL', 'warning', "System files damaged, only able to use the terminal. Type 'status' for more information.")
-
-            else:
-                sd.msg(state, 'success', f"Terminal Basic {state} module engaged.\nType 'commandlist' inside module for module command list.")
-                old_state = state
-
         if state == 'TERMINAL': # Handle the input with the terminal module command list if the state = TERMINAL
+            
+            checkstatechange(state, old_state)
 
             try:
                 inp = input(f'<{os.getcwd()}>')
@@ -88,6 +92,8 @@ if __name__ == "__main__":
 
         elif state == 'CSE': # Handle the input with the CSE module command list if the state = CSE
 
+            checkstatechange(state, old_state)
+
             try:
                 inp = input(f"[{state}]<{os.getcwd()}>")
                 cse.cseReadInput(inp)
@@ -96,6 +102,9 @@ if __name__ == "__main__":
                 print()
 
         elif state == 'STOM': # Handle the input with the STOM module command list if the state = STOM
+
+            checkstatechange(state, old_state)
+
             try:
                 inp = input(f"[{state}]<{os.getcwd()}>")
                 stom.stomReadInput(inp)
